@@ -1,0 +1,69 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    ci:
+        name: CI
+        runs-on: ubuntu-latest
+
+        steps:
+        # Step 1 — check out your code onto the VM
+        # fetch-depth: 0 means full git history
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+        
+        # Step 2 — set up pnpm (must be before setup-node so cache works)
+            - name: Set up pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 9
+
+        # Step 3 — set up Node.js 
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22.x'
+                  cache: 'pnpm'
+
+        # Step 4 — install dependencies
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+        # Step 5 - run Ultracite across the whole project
+            - name: Lint
+              run: pnpm run check
+
+        # Step 6 — TypeScript typecheck, no files emitted
+            - name: Typecheck
+              run: pnpm tsc --noEmit
+
+        # # Step 7 — find unused code, exports and dependencies
+        #     - name: Knip
+        #       run: pnpm knip
+
+        # Step 8 — validate commit messages in the PR
+        # on push: checks the last commit (HEAD~1 to HEAD)
+        # on pull_request: checks all commits in the PR range
+            - name: Commitlint
+              run: |
+                npx commitlint \
+                  --from ${{ github.event.pull_request.base.sha || 'HEAD~1' }} \
+                  --to HEAD \
+                  --verbose
+
+        # Step 9 — production build
+        # @t3-oss/env-nextjs validates env vars at build time.
+        # Currently only NODE_ENV is required — GitHub Actions sets it automatically.
+        # When you add real secrets (DATABASE_URL, API keys, etc.), expose them here:
+        #   env:
+        #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        #     NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+            - name: Build
+              run: pnpm build

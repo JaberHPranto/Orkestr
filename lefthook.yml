@@ -1,0 +1,13 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      glob: '*.{js,jsx,ts,tsx,json,css}'
+      run: npx ultracite fix {staged_files}
+      stage_fixed: true
+    - name: typecheck
+      run: pnpm tsc --noEmit
+
+commit-msg:
+  jobs:
+    - run: npx commitlint --edit {1}
