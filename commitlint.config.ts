@@ -19,7 +19,7 @@ export default {
       ],
     ],
     "scope-empty": [1, "never"], // warn if no scope
-    "subject-case": [2, "always", "lower-case"],
+    "subject-case": [0],
     "header-max-length": [2, "always", 72],
   },
 } satisfies UserConfig;

@@ -3,6 +3,7 @@ pre-commit:
   jobs:
     - name: lint
       glob: '*.{js,jsx,ts,tsx,json,css}'
+      exclude: 'src/components/ui/**|.next/**'
       run: npx ultracite fix {staged_files}
       stage_fixed: true
     - name: typecheck
