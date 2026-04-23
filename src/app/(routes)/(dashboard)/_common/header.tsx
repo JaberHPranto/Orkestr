@@ -2,6 +2,10 @@
 
 import { Logout, MoonIcon, SunIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  LogoutLink,
+  useKindeBrowserClient,
+} from "@kinde-oss/kinde-auth-nextjs";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,6 +20,8 @@ import { cn } from "@/lib/utils";
 
 export const Header = () => {
   const { theme, setTheme } = useTheme();
+  const { user } = useKindeBrowserClient();
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -53,14 +59,30 @@ export const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar className={"size-8 shrink-0 rounded-full"}>
-                <AvatarImage src={""} />
-                <AvatarFallback className={"rounded-full"}>JH</AvatarFallback>
+                <AvatarImage
+                  alt={user?.given_name ?? ""}
+                  src={user?.picture ?? ""}
+                />
+                <AvatarFallback className={"rounded-full"}>
+                  {`${user?.given_name?.[0] ?? ""}${user?.family_name?.[0] ?? ""}`}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={"w-56"}>
-              <DropdownMenuItem>
-                <HugeiconsIcon className="size-4" icon={Logout} />
-                <span>Logout</span>
+              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                {/* <Button
+                  className={"w-full"}
+                  variant={"outline"}
+                >
+                  <LogoutLink className="flex items-center gap-2 text-destructive">
+                    <HugeiconsIcon className="size-4" icon={Logout} />
+                    <span>Logout</span>
+                  </LogoutLink>
+                </Button> */}
+                <LogoutLink className="flex items-center gap-2 text-destructive">
+                  <HugeiconsIcon className="size-4" icon={Logout} />
+                  <span>Logout</span>
+                </LogoutLink>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

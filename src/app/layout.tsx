@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Space_Grotesk } from "next/font/google";
-import "./globals.css";
+import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { QueryProvider } from "@/context/query-provider";
 import { cn } from "@/lib/utils";
+import "./globals.css";
 
 const dmSans = Space_Grotesk({ subsets: ["latin"], variable: "--dm-sans" });
 
@@ -34,14 +36,18 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          disableTransitionOnChange
-          enableSystem
-        >
-          {children}
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            disableTransitionOnChange
+            enableSystem
+          >
+            {children}
+          </ThemeProvider>
+
+          <Toaster richColors />
+        </QueryProvider>
       </body>
     </html>
   );

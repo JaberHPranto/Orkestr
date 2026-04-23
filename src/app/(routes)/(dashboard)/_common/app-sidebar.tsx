@@ -1,7 +1,8 @@
 "use client";
 import { Settings, Workflow } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import type { IconSvgElement } from "@hugeicons/react";
 import { usePathname, useRouter } from "next/navigation";
+import { Icon } from "@/components/icon";
 import { Logo } from "@/components/logo";
 import {
   Sidebar,
@@ -43,7 +44,7 @@ export const AppSidebar = () => {
                 isActive={pathname === item.url}
                 onClick={() => router.push(item.url)}
               >
-                <HugeiconsIcon className="size-5" icon={item.icon} />
+                <Icon icon={item.icon} />
                 <span>{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
