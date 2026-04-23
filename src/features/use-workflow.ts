@@ -1,8 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
+import type { Workflow } from "@/lib/generated/prisma/client";
 
 const WORKFLOWS_KEY = ["workflows"] as const;
+
+const workflowKeys = {
+  all: WORKFLOWS_KEY,
+  details: (id: string) => [...WORKFLOWS_KEY, id] as const,
+};
 
 export const UseCreateWorkflow = () => {
   const queryClient = useQueryClient();
@@ -13,7 +19,7 @@ export const UseCreateWorkflow = () => {
     },
     onSuccess: (data) => {
       toast.success(data.message || "Workflow created successfully");
-      queryClient.invalidateQueries({ queryKey: WORKFLOWS_KEY });
+      queryClient.invalidateQueries({ queryKey: workflowKeys.all });
     },
     onError: (error) => {
       toast.error(
@@ -27,7 +33,7 @@ export const UseCreateWorkflow = () => {
 
 export const UseGetWorkflows = () =>
   useQuery({
-    queryKey: WORKFLOWS_KEY,
+    queryKey: workflowKeys.all,
     queryFn: async () => {
       const response = await axios.get<{
         data: {
@@ -39,5 +45,16 @@ export const UseGetWorkflows = () =>
       }>("/api/workflow");
       return response.data.data;
     },
-    retry: 1,
+  });
+
+export const UseGetWorkflowById = (id: string) =>
+  useQuery({
+    queryKey: workflowKeys.details(id),
+    queryFn: async () => {
+      const response = await axios.get<{ data: Workflow }>(
+        `/api/workflow/${id}`
+      );
+      return response.data.data;
+    },
+    enabled: !!id,
   });
