@@ -5,35 +5,47 @@ import {
   applyNodeChanges,
   Background,
   BackgroundVariant,
+  type Edge,
+  type Node,
   ReactFlow,
   useReactFlow,
 } from "@xyflow/react";
 import { useCallback, useState } from "react";
 import "@xyflow/react/dist/style.css";
+import { AgentNode } from "@/components/workflow/custom-nodes/agent/node";
+import { StartNode } from "@/components/workflow/custom-nodes/start/node";
 import { TOOL_MODE_ENUM, type ToolModeType } from "@/constants/workflow";
 import { useWorkflowContext } from "@/context/workflow-context";
 import { cn } from "@/lib/utils";
-import { createNode, type NodeType } from "@/lib/workflow/node-config";
+import {
+  createNode,
+  type NodeType,
+  NodeTypeEnum,
+} from "@/lib/workflow/node-config";
 import { CustomControls } from "./custom-controls";
 import { NodePanel } from "./node-panel";
-
-const initialNodes = [
-  { id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
-  { id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
-];
-const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
 
 export const WorkflowCanvas = () => {
   const { view } = useWorkflowContext();
   const { screenToFlowPosition } = useReactFlow();
 
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const startNode = createNode({
+    type: NodeTypeEnum.START,
+    position: { x: 400, y: 200 },
+  });
+
+  const [nodes, setNodes] = useState<Node[]>([startNode]);
+  const [edges, setEdges] = useState<Edge[]>([]);
 
   const [toolMode, setToolMode] = useState<ToolModeType>(TOOL_MODE_ENUM.SELECT);
   const isSelectMode = toolMode === TOOL_MODE_ENUM.SELECT;
 
   const isPreview = view === "preview";
+
+  const nodeTypes = {
+    [NodeTypeEnum.START]: StartNode,
+    [NodeTypeEnum.AGENT]: AgentNode,
+  };
 
   const onNodesChange = useCallback(
     (changes: any) =>
@@ -93,6 +105,7 @@ export const WorkflowCanvas = () => {
           fitView
           nodes={nodes}
           nodesDraggable={isSelectMode}
+          nodeTypes={nodeTypes}
           onConnect={onConnect}
           onDragOver={onDragOver}
           onDrop={onDrop}
