@@ -55,7 +55,7 @@ export const CustomControls = ({ toolMode, setToolMode }: Props) => {
           <Icon className="size-4" icon={MinusSignIcon} />
         </Button>
 
-        <div className="min-w-7 text-center font-medium text-sm tabular-nums">
+        <div className="min-w-7 text-center font-medium text-xs tabular-nums">
           {zoomPercentage}%
         </div>
 

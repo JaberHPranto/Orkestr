@@ -87,10 +87,16 @@ export const Header = ({ name, isLoading }: Props) => {
 
           <div className="flex items-center gap-2 rounded-lg bg-card p-1">
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button className={"size-8"} size={"icon"} variant={"ghost"}>
-                  <Icon className="size-4" icon={MoreHorizontal} />
-                </Button>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    className={"size-8"}
+                    size={"icon"}
+                    variant={"outline"}
+                  />
+                }
+              >
+                <Icon className="size-4" icon={MoreHorizontal} />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>

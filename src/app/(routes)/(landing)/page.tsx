@@ -2,13 +2,13 @@ import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { Button } from "@/components/ui/button";
 
 const Page = () => (
-  <div>
+  <div className="mx-auto flex h-screen max-w-5xl flex-col items-center justify-center text-center">
     <h1 className="font-bold text-2xl">Welcome to Orkestr</h1>
-    <p className="mt-4 text-lg text-muted-foreground">
+    <p className="mt-4 max-w-3xl text-lg text-muted-foreground">
       Orkestr is an AI-native workflow system that designs, executes, and
       optimizes processes using agents, memory, and real-world integrations.
     </p>
-    <p className="mt-2 text-lg text-muted-foreground">
+    <p className="mt-2 mb-6 text-lg text-muted-foreground">
       Please log in to access your dashboard and start creating workflows.
     </p>
     <LoginLink>
