@@ -1,5 +1,5 @@
 import type { Edge, Node } from "@xyflow/react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { createNode, NodeTypeEnum } from "@/lib/workflow/node-config";
 
 export type WorkflowView = "edit" | "preview";
@@ -21,7 +21,18 @@ const WorkflowContext = createContext<WorkflowContextType | undefined>(
   undefined
 );
 
-export function WorkflowProvider({ children }: { children: React.ReactNode }) {
+interface Props {
+  children: React.ReactNode;
+  initialEdges: Edge[];
+  initialNodes: Node[];
+  workflowId: string;
+}
+
+export function WorkflowProvider({
+  children,
+  initialEdges,
+  initialNodes,
+}: Props) {
   const [view, setView] = useState<WorkflowView>("edit");
 
   const startNode = createNode({
@@ -30,7 +41,12 @@ export function WorkflowProvider({ children }: { children: React.ReactNode }) {
   });
 
   const [nodes, setNodes] = useState<Node[]>([startNode]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [initialNodes, initialEdges]);
 
   // Utility function to get all backward nodes of a given node
   const getUpstreamNodes = (nodeId: string) => {

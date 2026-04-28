@@ -77,7 +77,7 @@ export const WorkflowNode = ({
       <div className="relative">
         <NodeStatusIndicator status={status} variant="border">
           <BaseNode
-            className={cn("w-fit min-w-36 cursor-pointer", className)}
+            className={cn("w-fit min-w-40 cursor-pointer", className)}
             onDoubleClick={(e) => {
               if (!settingComponent) {
                 return;
