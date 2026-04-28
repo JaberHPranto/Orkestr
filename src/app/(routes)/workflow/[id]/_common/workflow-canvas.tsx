@@ -16,6 +16,7 @@ import {
   ActionBarItem,
 } from "@/components/ui/action-bar";
 import { Spinner } from "@/components/ui/spinner";
+import { ChatView } from "@/components/workflow/chat";
 import { AgentNode } from "@/components/workflow/custom-nodes/agent/node";
 import { CommentNode } from "@/components/workflow/custom-nodes/comment/node";
 import { EndNode } from "@/components/workflow/custom-nodes/end/node";
@@ -160,6 +161,8 @@ export const WorkflowCanvas = ({ workflowId }: Props) => {
             )}
           </ReactFlow>
         </div>
+
+        <ChatView workflowId={workflowId} />
       </div>
 
       {hasUnsavedChanges && (
