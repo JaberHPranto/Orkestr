@@ -27,8 +27,8 @@ interface NodeConfigBase {
 
   inputs: Record<string, unknown>;
   label: string;
+  outputs: string[];
   type: NodeType;
-  // outputs: string[];
 }
 
 export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
@@ -38,6 +38,7 @@ export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
     label: "Start",
     type: NodeTypeEnum.START,
     inputs: {},
+    outputs: ["input"], // {{startId.input}}
   },
   [NodeTypeEnum.END]: {
     color: "bg-red-500",
@@ -47,6 +48,7 @@ export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
     inputs: {
       value: "",
     },
+    outputs: ["output.text"],
   },
   [NodeTypeEnum.AGENT]: {
     color: "bg-blue-500",
@@ -61,6 +63,7 @@ export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
       outputFormat: "text", // text or json
       responseSchema: null,
     },
+    outputs: ["output.text"], // {{agentId.output.text}} === "return_item"
   },
   [NodeTypeEnum.IF_ELSE]: {
     color: "bg-yellow-500",
@@ -77,6 +80,7 @@ export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
         },
       ],
     },
+    outputs: ["output.result"], // {{ifElseId.output.result}} === "caseName"
   },
   [NodeTypeEnum.HTTP]: {
     color: "bg-purple-500",
@@ -89,6 +93,7 @@ export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
       headers: {},
       body: {},
     },
+    outputs: ["output.body"],
   },
   [NodeTypeEnum.COMMENT]: {
     color: "bg-gray-500",
@@ -98,6 +103,7 @@ export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
     inputs: {
       comment: "",
     },
+    outputs: [],
   },
 };
 
@@ -134,6 +140,7 @@ export function createNode(options: CreateNodeOptions) {
     data: {
       label: config.label,
       color: config.color,
+      outputs: config.outputs,
       ...config.inputs,
     },
   };

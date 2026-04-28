@@ -1,6 +1,7 @@
 import { RoboticIcon } from "@hugeicons/core-free-icons";
 import type { NodeProps } from "@xyflow/react";
 import { WorkflowNode } from "../../workflow-node";
+import { AgentSettings } from "./settings";
 
 export const AgentNode = (props: NodeProps) => {
   const { id, data, selected } = props;
@@ -22,7 +23,7 @@ export const AgentNode = (props: NodeProps) => {
         label={label}
         nodeId={id}
         selected={selected}
-        settingComponent={null}
+        settingComponent={<AgentSettings data={data} id={id} />}
         settingDescription="Configure the agent's behavior and properties"
         settingTitle={`${label} Node Settings`}
         subText="Agent"

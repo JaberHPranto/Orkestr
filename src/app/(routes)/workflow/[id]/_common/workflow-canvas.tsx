@@ -5,8 +5,6 @@ import {
   applyNodeChanges,
   Background,
   BackgroundVariant,
-  type Edge,
-  type Node,
   ReactFlow,
   useReactFlow,
 } from "@xyflow/react";
@@ -26,16 +24,8 @@ import { CustomControls } from "./custom-controls";
 import { NodePanel } from "./node-panel";
 
 export const WorkflowCanvas = () => {
-  const { view } = useWorkflowContext();
+  const { view, nodes, edges, setNodes, setEdges } = useWorkflowContext();
   const { screenToFlowPosition } = useReactFlow();
-
-  const startNode = createNode({
-    type: NodeTypeEnum.START,
-    position: { x: 400, y: 200 },
-  });
-
-  const [nodes, setNodes] = useState<Node[]>([startNode]);
-  const [edges, setEdges] = useState<Edge[]>([]);
 
   const [toolMode, setToolMode] = useState<ToolModeType>(TOOL_MODE_ENUM.SELECT);
   const isSelectMode = toolMode === TOOL_MODE_ENUM.SELECT;
@@ -50,17 +40,17 @@ export const WorkflowCanvas = () => {
   const onNodesChange = useCallback(
     (changes: any) =>
       setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    []
+    [setNodes]
   );
   const onEdgesChange = useCallback(
     (changes: any) =>
       setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    []
+    [setEdges]
   );
   const onConnect = useCallback(
     (params: any) =>
       setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    []
+    [setEdges]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -87,7 +77,7 @@ export const WorkflowCanvas = () => {
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [screenToFlowPosition]
+    [screenToFlowPosition, setNodes]
   );
 
   return (
