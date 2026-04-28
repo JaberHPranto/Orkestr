@@ -11,6 +11,8 @@ import {
 import { useCallback, useState } from "react";
 import "@xyflow/react/dist/style.css";
 import { AgentNode } from "@/components/workflow/custom-nodes/agent/node";
+import { CommentNode } from "@/components/workflow/custom-nodes/comment/node";
+import { EndNode } from "@/components/workflow/custom-nodes/end/node";
 import { IfElseNode } from "@/components/workflow/custom-nodes/if-else/node";
 import { StartNode } from "@/components/workflow/custom-nodes/start/node";
 import { TOOL_MODE_ENUM, type ToolModeType } from "@/constants/workflow";
@@ -37,6 +39,8 @@ export const WorkflowCanvas = () => {
     [NodeTypeEnum.START]: StartNode,
     [NodeTypeEnum.AGENT]: AgentNode,
     [NodeTypeEnum.IF_ELSE]: IfElseNode,
+    [NodeTypeEnum.COMMENT]: CommentNode,
+    [NodeTypeEnum.END]: EndNode,
   };
 
   const onNodesChange = useCallback(

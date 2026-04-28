@@ -41,7 +41,7 @@ export const NODE_CONFIG: Record<NodeType, NodeConfigBase> = {
     outputs: ["input"], // {{startId.input}}
   },
   [NodeTypeEnum.END]: {
-    color: "bg-red-500",
+    color: "bg-rose-500",
     icon: StopIcon,
     label: "End",
     type: NodeTypeEnum.END,

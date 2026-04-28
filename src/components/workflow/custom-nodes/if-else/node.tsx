@@ -33,6 +33,7 @@ text-[11px] font-medium text-muted-foreground whitespace-nowrap`;
           source: false,
         }}
         icon={GitBranchIcon}
+        isDeletable
         label="If-Else"
         nodeId={id}
         selected={selected}
