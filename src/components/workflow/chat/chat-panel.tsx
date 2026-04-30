@@ -1,6 +1,13 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: .*/
 import { type UIMessage, useChat } from "@ai-sdk/react";
-import { ArrowUp, Plus, SparklesIcon } from "@hugeicons/core-free-icons";
-import { DefaultChatTransport } from "ai";
+import {
+  Alert01Icon,
+  AlertCircle,
+  ArrowUp,
+  Check,
+  Plus,
+  SparklesIcon,
+} from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import {
   Conversation,
@@ -28,22 +35,36 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Loader } from "@/components/ui/loader";
+import { Loader, TextShimmerLoader } from "@/components/ui/loader";
+import { Spinner } from "@/components/ui/spinner";
+import { createWorkflowTransport } from "@/lib/transport";
+import { cn } from "@/lib/utils";
+import { getNodeConfig, type NodeType } from "@/lib/workflow/node-config";
 
 interface Props {
   workflowId: string;
 }
 
-export const ChatPanel = (_props: Props) => {
+interface NodeDisplayType {
+  error?: any;
+  nodeId: string;
+  nodeName: string;
+  nodeType: NodeType;
+  output: any;
+  status: "loading" | "complete" | "finish" | "error";
+  toolCall?: { name: string };
+  toolResult?: { name: string; result: any };
+  type: "text-delta" | "tool-call" | "tool-result";
+}
+
+export const ChatPanel = ({ workflowId }: Props) => {
   const [input, setInput] = useState("");
   const [chatId, setChatId] = useState(() => crypto.randomUUID());
 
   const { messages, sendMessage, status } = useChat<UIMessage>({
     id: chatId,
     messages: [],
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
+    transport: createWorkflowTransport({ workflowId }),
   });
 
   const isLoading =
@@ -99,6 +120,16 @@ export const ChatPanel = (_props: Props) => {
                           >
                             {part.text}
                           </MessageResponse>
+                        );
+                      }
+
+                      if (part.type === "data-workflow-node") {
+                        const data = part.data as NodeDisplayType;
+                        return (
+                          <NodeDisplay
+                            data={data}
+                            key={`${message.id}-workflow-${index as number}`}
+                          />
                         );
                       }
                       // Handle other part types (e.g., images, files) as needed
@@ -158,6 +189,70 @@ export const ChatPanel = (_props: Props) => {
             </PromptInputFooter>
           </PromptInput>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const NodeDisplay = ({ data }: { data: NodeDisplayType }) => {
+  const nodeConfig = getNodeConfig(data.nodeType);
+
+  if (!nodeConfig) {
+    return null;
+  }
+
+  const { status, output, error, toolCall, toolResult } = data;
+
+  const renderStatus = () => {
+    if (status === "loading") {
+      return <Spinner />;
+    }
+    if (status === "error") {
+      return <Icon className="size-4" icon={Alert01Icon} />;
+    }
+    return <Icon className="size-4" icon={nodeConfig.icon ?? AlertCircle} />;
+  };
+
+  return (
+    <div>
+      <div
+        className={cn("flex items-center gap-2 rounded-md px-1 py-2", {
+          "animate-pulse": status === "loading",
+        })}
+      >
+        {renderStatus()}
+        <span className="font-medium text-sm">{data.nodeName}</span>
+      </div>
+
+      <div>
+        {toolResult || toolCall ? (
+          <div className="mx-3 my-2 flex items-center gap-2 rounded-lg border bg-muted/50 px-3">
+            {toolResult ? (
+              <>
+                <Icon className="size-4 text-green-500" icon={Check} />
+                <span className="text-sm"> {toolResult.name}</span>
+              </>
+            ) : (
+              <TextShimmerLoader text={`Calling ${toolCall?.name}...`} />
+            )}
+          </div>
+        ) : null}
+
+        {output && (
+          <div className="px-3 py-2">
+            <MessageResponse>
+              {typeof output === "string"
+                ? output
+                : JSON.stringify(output, null, 2)}
+            </MessageResponse>
+          </div>
+        )}
+
+        {status === "error" && (
+          <div className="rounded-md bg-destructive/10 p-3 text-destructive">
+            {JSON.stringify(error, null, 2)}
+          </div>
+        )}
       </div>
     </div>
   );

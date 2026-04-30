@@ -5,7 +5,7 @@ export default withAuth(
     // This function will run for all routes except those specified in publicPaths
   },
   {
-    publicPaths: ["/"],
+    publicPaths: ["/", "/api/upstash/trigger", "/api/workflow/chat"],
   }
 );
 

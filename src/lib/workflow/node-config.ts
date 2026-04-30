@@ -7,6 +7,10 @@ import {
   StopIcon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
+import { agentNodeExecutor } from "@/components/workflow/custom-nodes/agent/executor";
+import { endNodeExecutor } from "@/components/workflow/custom-nodes/end/executor";
+import { ifElseNodeExecutor } from "@/components/workflow/custom-nodes/if-else/executor";
+import { startNodeExecutor } from "../../components/workflow/custom-nodes/start/executor";
 import { generateId } from "../helper";
 import { MODELS } from "./constants";
 
@@ -20,6 +24,14 @@ export const NodeTypeEnum = {
 } as const;
 
 export type NodeType = (typeof NodeTypeEnum)[keyof typeof NodeTypeEnum];
+
+export const NODE_EXECUTORS = {
+  [NodeTypeEnum.START]: startNodeExecutor,
+  [NodeTypeEnum.AGENT]: agentNodeExecutor,
+  [NodeTypeEnum.IF_ELSE]: ifElseNodeExecutor,
+  [NodeTypeEnum.END]: endNodeExecutor, // end node executor
+  [NodeTypeEnum.HTTP]: null, // to be implemented
+};
 
 interface NodeConfigBase {
   color: string;
@@ -145,3 +157,13 @@ export function createNode(options: CreateNodeOptions) {
     },
   };
 }
+
+export const getExecutorNode = (type: NodeType) => {
+  const executor = NODE_EXECUTORS[type as keyof typeof NODE_EXECUTORS];
+
+  if (!executor) {
+    throw new Error(`Executor not found for node type: ${type}`);
+  }
+
+  return executor;
+};

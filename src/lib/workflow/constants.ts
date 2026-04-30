@@ -2,14 +2,21 @@ import { Globe02Icon, ServerStack03Icon } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 
 export const MODELS = [
-  {
-    value: "google/gemini-2.0-flash-001",
-    label: "Gemini 2.0 Flash",
-  },
-  { value: "google/gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite" },
+  // OpenAI
+  { value: "openai/gpt-5.4-mini", label: "GPT Mini" },
+  // Qwen (Alibaba)
+  { value: "qwen/qwen3.6-max-preview", label: "Qwen3.6 Max Preview" },
+  { value: "qwen/qwen3.6-flash", label: "Qwen3.6 Flash" },
+  // Moonshot
+  { value: "moonshotai/kimi-k2.6", label: "Kimi K2.6" },
+  // DeepSeek
+  { value: "deepseek/deepseek-r1", label: "DeepSeek R1" },
+  { value: "deepseek/deepseek-chat", label: "DeepSeek V3" },
+  // Anthropic
+  { value: "anthropic/claude-haiku-4.5", label: "Claude Haiku" },
+  // Google
   { value: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash" },
-  { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
-  { value: "claude-3-haiku", label: "Claude 3 Haiku (Fast)" },
+  { value: "google/gemini-2.0-flash-001", label: "Gemini 2.0 Flash" },
 ];
 
 export interface MCPToolType {
