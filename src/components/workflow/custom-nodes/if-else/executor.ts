@@ -31,7 +31,7 @@ export function ifElseNodeExecutor({ node, context }: Props) {
     }
 
     const variable = replaceVariables(condition.variable, outputs);
-    const value = condition.value;
+    const value = (condition.value as string).trim();
 
     const variableExpr = needsQuoting(variable)
       ? JSON.stringify(variable)

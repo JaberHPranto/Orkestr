@@ -47,7 +47,7 @@ interface Props {
 
 interface NodeDisplayType {
   error?: any;
-  nodeId: string;
+  id: string;
   nodeName: string;
   nodeType: NodeType;
   output: any;
@@ -56,6 +56,21 @@ interface NodeDisplayType {
   toolResult?: { name: string; result: any };
   type: "text-delta" | "tool-call" | "tool-result";
 }
+
+type MessagePart = UIMessage["parts"][number];
+type WorkflowNodePart = MessagePart & {
+  type: "data-workflow-node";
+  data: NodeDisplayType;
+};
+
+const isTextPart = (
+  part: MessagePart
+): part is MessagePart & { text: string } =>
+  part.type === "text" && "text" in part && typeof part.text === "string";
+
+const isWorkflowNodePart = (part: MessagePart): part is WorkflowNodePart =>
+  (part as { type?: string }).type === "data-workflow-node" &&
+  "data" in (part as object);
 
 export const ChatPanel = ({ workflowId }: Props) => {
   const [input, setInput] = useState("");
@@ -87,6 +102,39 @@ export const ChatPanel = ({ workflowId }: Props) => {
     setInput("");
   };
 
+  const getRenderableParts = (parts: UIMessage["parts"]): MessagePart[] => {
+    const mergedWorkflowParts = new Map<string, WorkflowNodePart>();
+    const workflowOrder: string[] = [];
+    const passthroughParts: MessagePart[] = [];
+
+    for (const part of parts) {
+      if (!isWorkflowNodePart(part)) {
+        passthroughParts.push(part);
+        continue;
+      }
+
+      const data = part.data;
+      const nodeId = data.id || data.nodeName || "unknown-node";
+
+      if (!mergedWorkflowParts.has(nodeId)) {
+        workflowOrder.push(nodeId);
+      }
+
+      mergedWorkflowParts.set(nodeId, part);
+    }
+
+    const orderedWorkflowParts: WorkflowNodePart[] = [];
+
+    for (const nodeId of workflowOrder) {
+      const workflowPart = mergedWorkflowParts.get(nodeId);
+      if (workflowPart) {
+        orderedWorkflowParts.push(workflowPart);
+      }
+    }
+
+    return [...passthroughParts, ...orderedWorkflowParts];
+  };
+
   return (
     <div className="flex h-full flex-col overflow-hidden bg-background">
       {/* Chat Header */}
@@ -111,8 +159,8 @@ export const ChatPanel = ({ workflowId }: Props) => {
               {messages.map((message) => (
                 <Message from={message.role} key={message.id}>
                   <MessageContent className="text-sm">
-                    {message.parts.map((part, index) => {
-                      if (part.type === "text") {
+                    {getRenderableParts(message.parts).map((part, index) => {
+                      if (isTextPart(part)) {
                         return (
                           <MessageResponse
                             className="whitespace-pre-wrap"
@@ -123,8 +171,8 @@ export const ChatPanel = ({ workflowId }: Props) => {
                         );
                       }
 
-                      if (part.type === "data-workflow-node") {
-                        const data = part.data as NodeDisplayType;
+                      if (isWorkflowNodePart(part)) {
+                        const data = part.data;
                         return (
                           <NodeDisplay
                             data={data}

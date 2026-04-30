@@ -15,13 +15,14 @@ export const GET = (req: Request) => {
   }
 
   const channel = realtime.channel(workflowRunId);
+  const isReconnect = req.headers.get("x-is-reconnect") === "true";
 
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
       await channel.subscribe({
         events: ["workflow.chunks"],
-        history: true,
+        history: isReconnect,
         onData: ({ data }) => {
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
